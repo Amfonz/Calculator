@@ -1,25 +1,107 @@
 /*
 calculation is represented by expression object
 operand2 is either a number or another object
+
+where to cast operands1
+handle precedence 
+handle no operator case ie 1 = 
+handle missing operator (copy the other ie 1+=)
+handle assignment of expression result to operand1
+return the values and display them properly
+
+
 */
+let hasNewOp = false;
+let precedence = {
+  "+" : 1,
+  "-" : 1,
+  "*" : 2,
+  "/" : 2,
+  "%" : 2,
+};
 let expression = {
-  operand1 : 0,
-  operand2 : null,
-  operator: null
-}
-document.querySelector('.grid').addEventListener('click',(e)=>{
-  document.querySelector('#display span').textContent += e.target.dataset.val;
-  handleInput(e);
-});
-document.querySelector(`button[data-val="="]`).addEventListener('click',evaluate);
+  operand1 : "",
+  operand2 : "",
+  operator : ""
+};
 
 function add(exp){
   return typeof exp.operand2 === "object" ? exp.operand1 + evaluate(exp.operand2) : exp.operand1 + exp.operand2;
 }
-function evaluate(){
-  if(expression.operator === "+")console.log(add(expression));
+function subtract(exp){
+  return typeof exp.operand2 === "object" ? exp.operand1 - evaluate(exp.operand2) : exp.operand1 - exp.operand2;
+}
+function multiply(exp){
+  return typeof exp.operand2 === "object" ? exp.operand1 * evaluate(exp.operand2) : exp.operand1 * exp.operand2;
+}
+function divide(exp){
+  return typeof exp.operand2 === "object" ? exp.operand1 / evaluate(exp.operand2) : exp.operand1 / exp.operand2;
+}
+function evaluate(event = null,exp = expression){
+  switch (exp.operator){
+    case "+" :
+      console.log(add(exp));
+      break; 
+    case "-" :
+      console.log(subtract(exp));
+      break;
+    case "*" :
+      console.log(multiply(exp));
+      break;
+    case "/" :
+      console.log(divide(exp));
+      break;
+    default: 
+      return expression.operand1;
+  }
+  
 }
 function handleInput(e){
-  if(e.target.dataset.type ==="op") expression.operator = e.target.dataset.val;
-  else expression.operand2 = +e.target.dataset.val;
+  eData = e.target.dataset;
+  if(eData.val == 'ac'){clear();return;}
+  if(eData.val==="="){
+    evaluate(expression);
+  }
+  else if(eData.type == "op"){
+    if(!hasNewOp){
+      expression.operator = eData.val;
+      hasNewOp = !hasNewOp;
+    }
+  }else{
+    if(!hasNewOp){
+      //add to operand 1
+      expression.operand1+=eData.val;
+    }else{
+      expression.operand2+=eData.val;
+    }
+  }
 }
+function displayEvaluation(ans){
+  let top = document.querySelector('#disp-top');
+  let bottom = document.querySelector('#disp-bottom');
+  top.textContent = bottom.textContent;
+  bottom.textContent = ans
+}
+function updateDisplay(e){
+  let data = e.target.dataset;
+  if(data.val!=='='){
+    document.querySelector('#disp-bottom').textContent += e.target.dataset.val;
+  }
+}
+function clear(){
+  expression.operand1="";
+  expression.operand2="";
+  expression.operator="";
+  document.querySelector('#disp-top').textContent="";
+  document.querySelector('#disp-bottom').textContent="0";
+}
+/* event listeners */
+document.querySelector('.grid').addEventListener('click',(e)=>{
+  updateDisplay(e);
+  handleInput(e);
+});
+document.querySelector(`button[data-val="="]`).addEventListener('click',(e)=>{
+  evaluate();
+  //displayEvaluation(2);
+});
+

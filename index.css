@@ -12,13 +12,18 @@
     "zer zer dec eq";
   width: 70vw;
   margin: 5vw auto;
-  height: 50vh;
+  height: 70vh;
+  background-color:black;
+  box-shadow: 0 0 10px;
+  border: 1px solid black;
 }
 button{
  border: 1px solid hsl(0,0%,80%);
  padding: 0;
- font-size: var(--base-font);
-  
+ font-size: calc(var(--base-font) * 1.2);
+}
+button[data-type="op"]{
+  background-color: hsl(30,70%,50%);
 }
 button[data-val = "ac"]{
   grid-area: ac;
@@ -31,17 +36,25 @@ button[data-val = "."]{
 }
 button[data-val = "="]{
   grid-area: eq;
+  background-color: hsl(100,40%,70%);
+}
+button:hover{
+  opacity: .8;
+  border-color: hsl(0,0%,60%);
 }
 #display{
   position: relative;
   grid-area: disp;
   text-align: right;
-  background-color: rgba(0,0,0,.35);
+  background-color: hsl(0,0%,70%);
 }
-#display span{
+#disp-bottom, #disp-top{
   position: absolute;
   bottom: 0;
   right: 5px;
   font-size: var(--base-font);
+}
+#disp-top{
+  top: 5px;
 }
 
