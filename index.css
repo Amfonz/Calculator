@@ -1,0 +1,47 @@
+:root{
+  --base-font: 1rem;
+}
+.grid{
+  display: grid;
+  grid-template-areas: 
+    "disp disp disp disp"
+    "ac a a a"
+    "b b b b"
+    "c c c c"
+    "d d d d"
+    "zer zer dec eq";
+  width: 70vw;
+  margin: 5vw auto;
+  height: 50vh;
+}
+button{
+ border: 1px solid hsl(0,0%,80%);
+ padding: 0;
+ font-size: var(--base-font);
+  
+}
+button[data-val = "ac"]{
+  grid-area: ac;
+}
+button[data-val = "0"]{
+  grid-area: zer;
+}
+button[data-val = "."]{
+  grid-area: dec;
+}
+button[data-val = "="]{
+  grid-area: eq;
+}
+#display{
+  position: relative;
+  grid-area: disp;
+  text-align: right;
+  background-color: rgba(0,0,0,.35);
+}
+#display span{
+  position: absolute;
+  bottom: 0;
+  right: 5px;
+  font-size: var(--base-font);
+}
+

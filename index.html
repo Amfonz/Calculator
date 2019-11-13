@@ -3,29 +3,34 @@
   <head>
     <meta charset="UTF-8">
     <title>Calculator</title>
+    <link rel="stylesheet" href="meyers-reset.css" type="text/css">
+    <link rel="stylesheet" href="index.css" type="text/css">
   </head>
   <body>
     <div id="container" class="grid">
-      <div id="display"></div>
-      <button>AC</button>
-      <button>Del</button>
-      <button>%</button>
-      <button>/</button>
-      <button>7</button>
-      <button>8</button>
-      <button>9</button>
-      <button>x</button>
-      <button>4</button>
-      <button>5</button>
-      <button>6</button>
-      <button>-</button>
-      <button>1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>+</button>
-      <button>0</button>
-      <button>.</button>
-      <button>=</button>
+      <div id="display">
+        <span></span>
+      </div>
+      <button data-val="ac">AC</button>
+      <button data-val="del" >Del</button>
+      <button data-val="mod" data-type="op">%</button>
+      <button data-val="/" data-type="op">/</button>
+      <button data-val="7">7</button>
+      <button data-val="8">8</button>
+      <button data-val="9">9</button>
+      <button data-val="*" data-type="op">x</button>
+      <button data-val="4">4</button>
+      <button data-val="5">5</button>
+      <button data-val="6">6</button>
+      <button data-val="-" data-type="op">-</button>
+      <button data-val="1">1</button>
+      <button data-val="2">2</button>
+      <button data-val="3">3</button>
+      <button data-val="+" data-type="op">+</button>
+      <button data-val="0">0</button>
+      <button data-val=".">.</button>
+      <button data-val="=">=</button>
     </div>
+    <script src="index.js"></script>
   </body>
 </html>
