@@ -1,17 +1,3 @@
-/*
-calculation is represented by expression object
-operand2 is either a number or another object
-
-where to cast operands1
-handle precedence 
-handle no operator case ie 1 = 
-handle missing operator (copy the other ie 1+=)
-handle assignment of expression result to operand1
-return the values and display them properly
-
-
-*/
-let hasNewOp = false;
 let precedence = {
   "+" : 1,
   "-" : 1,
@@ -19,66 +5,103 @@ let precedence = {
   "/" : 2,
   "%" : 2,
 };
-let expression = {
-  operand1 : "",
-  operand2 : "",
-  operator : ""
-};
+let operatorStack = [];
+let operandStack = [];
 
-function add(exp){
-  return typeof exp.operand2 === "object" ? exp.operand1 + evaluate(exp.operand2) : exp.operand1 + exp.operand2;
+function add(o1,o2){
+  return o1 + o2;
 }
-function subtract(exp){
-  return typeof exp.operand2 === "object" ? exp.operand1 - evaluate(exp.operand2) : exp.operand1 - exp.operand2;
+function subtract(o1,o2){
+  return o1 - o2;
 }
-function multiply(exp){
-  return typeof exp.operand2 === "object" ? exp.operand1 * evaluate(exp.operand2) : exp.operand1 * exp.operand2;
+function multiply(o1,o2){
+  return o1 * o2;
 }
-function divide(exp){
-  return typeof exp.operand2 === "object" ? exp.operand1 / evaluate(exp.operand2) : exp.operand1 / exp.operand2;
+function divide(o1,o2){
+  return o1 / o2
 }
-function evaluate(event = null,exp = expression){
+function modulo(o1,o2){
+  return o1 % o2;
+}
+function evaluate(torStack,andStack){
+  let tor1 = torStack.pop();
+  let tor2 = torStack.pop();
+  let and2 = andStack.pop();
+  let and1 = andStack.pop();
+  if(!tor2){//bottom
+    return chooseOperation(tor1,and1,and2);
+  }
+  else if(precedence[tor1] > precedence[tor2]){
+    let ans = chooseOperation(tor1,and1,and2);
+    andStack.push(ans)
+    torStack.push(tor2)
+    return evaluate(torStack,andStack);
+  }
+  else{
+    torStack.push(tor2);
+    andStack.push(and1);
+    return chooseOperation(tor1,evaluate(torStack,andStack),and2);
+  }
+}
+function chooseOperation(operator,op1,op2){
   let result;
-  exp.operand1 = +exp.operand1;
-  if(typeof exp.operand2 !== "object") exp.operand2 = +exp.operand2;
-  switch (exp.operator){
+  switch (operator){
     case "+" :
-      result = add(exp);
+      result = add(op1,op2);
       break; 
     case "-" :
-      result = subtract(exp);
+      result = subtract(op1,op2);
       break;
     case "*" :
-      result = multiply(exp);
+      result = multiply(op1,op2);
       break;
     case "/" :
-      result = divide(exp);
+      result = divide(op1,op2);
+      break;
+    case "%" :
+      result = modulo(op1,op2);
       break;
     default: 
-      result =  expression.operand1;
+      result =  op1;
   }
   return result;
 }
+function parseExpression(exp){
+  //take the textContent of disp-bottom
+  //parse it and return it for evalutaion
+  exp.match(/[0-9]+/g).forEach(element => operandStack.push(+element));;
+  exp.match(/[+/\-%*]/g).forEach(element => operatorStack.push(element));
+
+}
+
+
 function handleInput(e){
   eData = e.target.dataset;
-  if(eData.val == 'ac'){clear();return;}
-  if(eData.val==="="){
-    let result = evaluate();
-    displayEvaluation(result);
-    expression.operand1 = result;
-    hasNewOp = false;
+  if(eData.val === 'ac'){clear();}
+  else if(eData.val === '='){
+    //parse expression
+    let exp = document.querySelector('#disp-bottom').textContent;
+    parseExpression(exp);
+    //evaluate
+    let ans = evaluate(operatorStack,operandStack);
+    //updtae displays
+    displayEvaluation(ans);
   }
-  else if(eData.type == "op"){
-    expression.operator = eData.val;
-    hasNewOp = true;
-  }else{
-    if(!hasNewOp){
-      //add to operand 1
-      expression.operand1+=eData.val;
-    }else{
-      expression.operand2+=eData.val;
-    }
+  else if(eData.val === 'del'){
+    backSpace();
   }
+  else{updateDisplay(eData);}
+
+
+  return;
+}
+function backSpace(){
+  let expression = document.querySelector('#disp-bottom');
+    let length = expression.textContent.length;
+    if(expression.textContent === '0')return;
+    if(length === 1){expression.textContent = '0';return;}//deleting non-zero single char set screen to 0
+    expression.textContent = expression.textContent.slice(0,length-1);
+    
 }
 
 function displayEvaluation(ans){
@@ -87,27 +110,22 @@ function displayEvaluation(ans){
   top.textContent = bottom.textContent;
   bottom.textContent = ans;
 }
-function updateDisplay(e){
-  let data = e.target.dataset;
-  if(data.val!=='='){
-    display = document.querySelector('#disp-bottom')
-    if(display.textContent === "0"){
-      display.textContent = e.target.dataset.val;
-    }else{
-      document.querySelector('#disp-bottom').textContent += e.target.dataset.val;
-    }
+function updateDisplay(eData){
+  display = document.querySelector('#disp-bottom')
+  if(display.textContent === "0" && eData.type!=="op"){
+    display.textContent = eData.val;
+  }else{
+    document.querySelector('#disp-bottom').textContent += eData.val;
   }
 }
 function clear(){
-  expression.operand1="";
-  expression.operand2="";
-  expression.operator="";
   document.querySelector('#disp-top').textContent="";
   document.querySelector('#disp-bottom').textContent="0";
+  operatorStack = [];
+  operandStack = [];
 }
 /* event listeners */
 document.querySelector('.grid').addEventListener('click',(e)=>{
-  updateDisplay(e);
   handleInput(e);
 });
 
