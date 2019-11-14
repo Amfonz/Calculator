@@ -38,35 +38,39 @@ function divide(exp){
   return typeof exp.operand2 === "object" ? exp.operand1 / evaluate(exp.operand2) : exp.operand1 / exp.operand2;
 }
 function evaluate(event = null,exp = expression){
+  let result;
+  exp.operand1 = +exp.operand1;
+  if(typeof exp.operand2 !== "object") exp.operand2 = +exp.operand2;
   switch (exp.operator){
     case "+" :
-      console.log(add(exp));
+      result = add(exp);
       break; 
     case "-" :
-      console.log(subtract(exp));
+      result = subtract(exp);
       break;
     case "*" :
-      console.log(multiply(exp));
+      result = multiply(exp);
       break;
     case "/" :
-      console.log(divide(exp));
+      result = divide(exp);
       break;
     default: 
-      return expression.operand1;
+      result =  expression.operand1;
   }
-  
+  return result;
 }
 function handleInput(e){
   eData = e.target.dataset;
   if(eData.val == 'ac'){clear();return;}
   if(eData.val==="="){
-    evaluate(expression);
+    let result = evaluate();
+    displayEvaluation(result);
+    expression.operand1 = result;
+    hasNewOp = false;
   }
   else if(eData.type == "op"){
-    if(!hasNewOp){
-      expression.operator = eData.val;
-      hasNewOp = !hasNewOp;
-    }
+    expression.operator = eData.val;
+    hasNewOp = true;
   }else{
     if(!hasNewOp){
       //add to operand 1
@@ -76,16 +80,22 @@ function handleInput(e){
     }
   }
 }
+
 function displayEvaluation(ans){
   let top = document.querySelector('#disp-top');
   let bottom = document.querySelector('#disp-bottom');
   top.textContent = bottom.textContent;
-  bottom.textContent = ans
+  bottom.textContent = ans;
 }
 function updateDisplay(e){
   let data = e.target.dataset;
   if(data.val!=='='){
-    document.querySelector('#disp-bottom').textContent += e.target.dataset.val;
+    display = document.querySelector('#disp-bottom')
+    if(display.textContent === "0"){
+      display.textContent = e.target.dataset.val;
+    }else{
+      document.querySelector('#disp-bottom').textContent += e.target.dataset.val;
+    }
   }
 }
 function clear(){
@@ -100,8 +110,5 @@ document.querySelector('.grid').addEventListener('click',(e)=>{
   updateDisplay(e);
   handleInput(e);
 });
-document.querySelector(`button[data-val="="]`).addEventListener('click',(e)=>{
-  evaluate();
-  //displayEvaluation(2);
-});
+
 

@@ -13,9 +13,10 @@
   width: 70vw;
   margin: 5vw auto;
   height: 70vh;
-  background-color:black;
+  background-color: black;
   box-shadow: 0 0 10px;
   border: 1px solid black;
+  grid-template-rows: 20% 1fr 1fr 1fr 1fr 1fr;
 }
 button{
  border: 1px solid hsl(0,0%,80%);
@@ -53,6 +54,7 @@ button:hover{
   bottom: 0;
   right: 5px;
   font-size: var(--base-font);
+  padding: 10px;
 }
 #disp-top{
   top: 5px;
