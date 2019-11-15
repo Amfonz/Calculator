@@ -49,7 +49,7 @@ button:active{
   position: relative;
   grid-area: disp;
   text-align: right;
-  background-color: hsl(0,0%,70%);
+  background-color: hsl(0,0%,80%);
 }
 #disp-bottom, #disp-top{
   position: absolute;
