@@ -1,6 +1,5 @@
 /*
-  update regex to catch decimals
-  enable del button on backspace del
+
   rounding off floats
   bracket implementation.
   keyboard input
@@ -100,6 +99,8 @@ function parseExpression(exp){
 
 }
 function decideDecimalStatus(){
+  //check if the last operand has a decimal in it or not
+  //used in delete key.
   let expression = document.querySelector('#disp-bottom').textContent;
   let operands = expression.match(/[0-9]*\.?[0-9]+/g);
   operands[operands.length-1].indexOf('.') === -1 ? enableDecimal() : disableDecimal();
