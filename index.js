@@ -134,10 +134,10 @@ function handleInput(e){
     if(eData.type==="op"){
       if(precedence[exp[exp.length-1]] ){//operator after oeprator
         updateDisplay("replace",eData.val);
-      }
+      }else {updateDisplay("append",eData.val);}
       enableDecimal();
     }
-    if(newOp && eData.type!=="op"){//new operation (ie screen has 0)
+    else if(newOp && eData.type!=="op"){//new operation (ie screen has 0)
       updateDisplay("overwrite",eData.val);
     }else{updateDisplay("append",eData.val);}
 
