@@ -1,9 +1,9 @@
 /*
 
   rounding off floats
-  bracket implementation.
-  keyboard input
   clean up handle input
+  /number disable firfox shortcut
+  
 */
 class DivByZeroError extends Error{
   constructor(message){
@@ -94,6 +94,7 @@ function chooseOperation(operator,op1,op2){
 function parseExpression(exp){
   //take the textContent of disp-bottom
   //parse it and return it for evalutaion
+  //fails if no operators (desired behaviour so error is left alone (type error))
   exp.match(/[0-9]*\.?[0-9]+/g).forEach(element => operandStack.push(+element));;
   exp.match(/[+/\-%*]/g).forEach(element => operatorStack.push(element));
 
@@ -111,11 +112,13 @@ function disableDecimal(){
 function enableDecimal(){
   document.querySelector("button[data-val='.'").disabled=false;
 }
-function handleInput(e){
-  let eData = e.target.dataset;
+function handleInput(val,type = "num"){
   let exp = document.querySelector('#disp-bottom').textContent;
-  if(eData.val === 'ac'){clear();newOp = true;}
-  else if(eData.val === '='){
+  if(val === 'ac'||val === "ArrowRight"){
+    clear();
+    newOp = true; return;
+  }
+  if(val === '=' || val === "Enter"){
     //parse expression
     parseExpression(exp);
     //evaluate
@@ -124,22 +127,33 @@ function handleInput(e){
     displayEvaluation(ans);
     newOp = true;
     decideDecimalStatus();
+    return;
   }
-  else if(eData.val === 'del'){
+  if(val === 'del' || val === "ArrowLeft"){
     backSpace();
+    return;
   }
-  //operator or number or decimal
-  else{
-    if(eData.val===".") disableDecimal();
-    if(eData.type==="op"){
-      if(precedence[exp[exp.length-1]] ){//operator after oeprator
-        updateDisplay("replace",eData.val);
-      }else {updateDisplay("append",eData.val);}
-      enableDecimal();
+  if(val === "."){
+    let decButton = document.querySelector("button[data-val='.']");
+    if(decButton.disabled){
+      return;
+    }else{
+      updateDisplay("append",val);
+      disableDecimal();
     }
-    else if(newOp && eData.type!=="op"){//new operation (ie screen has 0)
-      updateDisplay("overwrite",eData.val);
-    }else{updateDisplay("append",eData.val);}
+  }
+  else{
+    if(type==="op"){
+      if(precedence[exp[exp.length-1]] ){//operator after oeprator
+        updateDisplay("replace",val);
+      }else {
+        updateDisplay("append",val);
+        enableDecimal();
+      }
+    }
+    else if(newOp && type!=="op"){//new operation (ie screen has 0)
+      updateDisplay("overwrite",val);
+    }else{updateDisplay("append",val);}
 
   }
   return;
@@ -181,8 +195,32 @@ function clear(){
   enableDecimal();
 }
 /* event listeners */
+
 document.querySelector('.grid').addEventListener('click',(e)=>{
-  handleInput(e);
+  handleInput(e.target.dataset.val,e.target.dataset.type);
+});
+window.addEventListener('keydown',(e)=>{
+  if(!e.key.match(/[0-9+=\-/\.*%]|Enter|ArrowLeft|ArrowRight/)) return;
+  !precedence[e.key] ? handleInput(e.key) : handleInput(e.key,"op");
+});
+window.addEventListener('keydown',(e)=>{
+  //add click effect on button display if using keyboard
+  if(e.key==="ArrowLeft"){
+    document.querySelector(`button[data-val='del']`).style.opacity = ".6";
+  }else if(e.key==="ArrowRight"){
+    document.querySelector(`button[data-val='ac']`).style.opacity = ".6";
+  }else{
+    document.querySelector(`button[data-val='${e.key}']`).style.opacity = ".6";
+  }  
+});
+window.addEventListener('keyup',(e)=>{
+  if(e.key==="ArrowLeft"){
+    document.querySelector(`button[data-val='del']`).style.opacity = "1";
+  }else if(e.key==="ArrowRight"){
+    document.querySelector(`button[data-val='ac']`).style.opacity = "1";
+  }else{
+    document.querySelector(`button[data-val='${e.key}']`).style.opacity = "1";
+  }
 });
 
 
