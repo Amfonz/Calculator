@@ -38,11 +38,11 @@ button[data-val = "="]{
   grid-area: eq;
   background-color: hsl(100,40%,70%);
 }
-button:hover{
+button:hover,.hov{
   opacity: .8;
   border-color: hsl(0,0%,60%);
 }
-button:active{
+button:active,.press{
   opacity: .6;
 }
 #display{
@@ -50,6 +50,7 @@ button:active{
   grid-area: disp;
   text-align: right;
   background-color: hsl(0,0%,80%);
+  overflow-x: hidden;
 }
 #disp-bottom, #disp-top{
   position: absolute;
@@ -61,4 +62,13 @@ button:active{
 #disp-top{
   top: 5px;
 }
-
+body{
+  background-color: hsl(180,30%,60%);
+  text-align: center;
+}
+p{
+  line-height: 4;
+  font-size: calc(var(--base-font) * 2);
+  background-color: rgba(0,0,0,.3);
+  color : white;
+}

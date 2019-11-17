@@ -1,16 +1,10 @@
-/*
-
-  rounding off floats
-  clean up handle input
-  /number disable firfox shortcut
-  
-*/
 class DivByZeroError extends Error{
   constructor(message){
     super(message);
     this.name="DivByZeroError"
   }
 }
+//program state var, indicates if start of new operation
 let newOp = true;
 let precedence = {
   "+" : 1,
@@ -53,12 +47,14 @@ function evaluate(torStack,andStack){
       return chooseOperation(tor1,and1,and2);
     }
     else if(precedence[tor1] > precedence[tor2]){
+      //case where you evaluate then move down (ie 1+2*1)
       let ans = chooseOperation(tor1,and1,and2);
       andStack.push(ans)
       torStack.push(tor2)
       return evaluate(torStack,andStack);
     }
     else{
+      //evaluate rest of stack and use it with the operation on top
       torStack.push(tor2);
       andStack.push(and1);
       return chooseOperation(tor1,evaluate(torStack,andStack),and2);
@@ -92,8 +88,6 @@ function chooseOperation(operator,op1,op2){
   }
 
 function parseExpression(exp){
-  //take the textContent of disp-bottom
-  //parse it and return it for evalutaion
   //fails if no operators (desired behaviour so error is left alone (type error))
   exp.match(/[0-9]*\.?[0-9]+/g).forEach(element => operandStack.push(+element));;
   exp.match(/[+/\-%*]/g).forEach(element => operatorStack.push(element));
@@ -101,10 +95,10 @@ function parseExpression(exp){
 }
 function decideDecimalStatus(){
   //check if the last operand has a decimal in it or not
-  //used in delete key.
-  let expression = document.querySelector('#disp-bottom').textContent;
+  //used in delete key and after evaluating an expression
+  let expression = document.querySelector("#disp-bottom").textContent;
   let operands = expression.match(/[0-9]*\.?[0-9]+/g);
-  operands[operands.length-1].indexOf('.') === -1 ? enableDecimal() : disableDecimal();
+  operands[operands.length-1].indexOf(".") === -1 ? enableDecimal() : disableDecimal();
 }
 function disableDecimal(){
   document.querySelector("button[data-val='.'").disabled=true;
@@ -113,15 +107,13 @@ function enableDecimal(){
   document.querySelector("button[data-val='.'").disabled=false;
 }
 function handleInput(val,type = "num"){
-  let exp = document.querySelector('#disp-bottom').textContent;
-  if(val === 'ac'||val === "ArrowRight"){
+  let exp = document.querySelector("#disp-bottom").textContent;
+  if(val === "ac" || val === "ArrowRight"){
     clear();
     newOp = true; return;
   }
-  if(val === '=' || val === "Enter"){
-    //parse expression
+  if(val === "=" || val === "Enter"){
     parseExpression(exp);
-    //evaluate
     let ans = evaluate(operatorStack,operandStack);
     //updtae displays
     displayEvaluation(ans);
@@ -129,7 +121,7 @@ function handleInput(val,type = "num"){
     decideDecimalStatus();
     return;
   }
-  if(val === 'del' || val === "ArrowLeft"){
+  if(val === "del" || val === "ArrowLeft"){
     backSpace();
     return;
   }
@@ -159,23 +151,23 @@ function handleInput(val,type = "num"){
   return;
 }
 function backSpace(){
-  let expression = document.querySelector('#disp-bottom');
+  let expression = document.querySelector("#disp-bottom");
   let length = expression.textContent.length;
-  if(expression.textContent === '0')return;
-  if(length === 1){expression.textContent = '0';return;}//deleting non-zero single char => set screen to 0
+  if(expression.textContent === "0") return;
+  if(length === 1){expression.textContent = "0"; newOp = true; return;}//deleting non-zero single char => set screen to 0
   let newExpression = expression.textContent.slice(0,length-1);
   decideDecimalStatus();
   expression.textContent = newExpression;
 }
 
 function displayEvaluation(ans){
-  let top = document.querySelector('#disp-top');
-  let bottom = document.querySelector('#disp-bottom');
+  let top = document.querySelector("#disp-top");
+  let bottom = document.querySelector("#disp-bottom");
   top.textContent = bottom.textContent;
   bottom.textContent = ans;
 }
 function updateDisplay(mode,val){
-  let display = document.querySelector('#disp-bottom');
+  let display = document.querySelector("#disp-bottom");
   //check if we got a operator than another
   if(mode==="overwrite"){
     display.textContent = val;
@@ -183,43 +175,43 @@ function updateDisplay(mode,val){
     display.textContent = display.textContent.slice(0,display.textContent.length-1) + val;
   }
   else{
-    document.querySelector('#disp-bottom').textContent += val;
+    document.querySelector("#disp-bottom").textContent += val;
   }
   newOp = false;
 }
 function clear(){
-  document.querySelector('#disp-top').textContent="";
-  document.querySelector('#disp-bottom').textContent="0";
+  document.querySelector("#disp-top").textContent="";
+  document.querySelector("#disp-bottom").textContent="0";
   operatorStack = [];
   operandStack = [];
   enableDecimal();
 }
 /* event listeners */
 
-document.querySelector('.grid').addEventListener('click',(e)=>{
+document.querySelector(".grid").addEventListener("click",(e)=>{
   handleInput(e.target.dataset.val,e.target.dataset.type);
 });
-window.addEventListener('keydown',(e)=>{
+window.addEventListener("keydown",(e)=>{
   if(!e.key.match(/[0-9+=\-/\.*%]|Enter|ArrowLeft|ArrowRight/)) return;
   !precedence[e.key] ? handleInput(e.key) : handleInput(e.key,"op");
 });
-window.addEventListener('keydown',(e)=>{
+window.addEventListener("keydown",(e)=>{
   //add click effect on button display if using keyboard
   if(e.key==="ArrowLeft"){
-    document.querySelector(`button[data-val='del']`).style.opacity = ".6";
+    document.querySelector(`button[data-val='del']`).classList.toggle("press");
   }else if(e.key==="ArrowRight"){
-    document.querySelector(`button[data-val='ac']`).style.opacity = ".6";
+    document.querySelector(`button[data-val='ac']`).classList.toggle("press");
   }else{
-    document.querySelector(`button[data-val='${e.key}']`).style.opacity = ".6";
+    document.querySelector(`button[data-val='${e.key}']`).classList.toggle("press");
   }  
 });
-window.addEventListener('keyup',(e)=>{
+window.addEventListener("keyup",(e)=>{
   if(e.key==="ArrowLeft"){
-    document.querySelector(`button[data-val='del']`).style.opacity = "1";
+    document.querySelector(`button[data-val='del']`).classList.toggle("press");
   }else if(e.key==="ArrowRight"){
-    document.querySelector(`button[data-val='ac']`).style.opacity = "1";
+    document.querySelector(`button[data-val='ac']`).classList.toggle("press");
   }else{
-    document.querySelector(`button[data-val='${e.key}']`).style.opacity = "1";
+    document.querySelector(`button[data-val='${e.key}']`).classList.toggle("press");
   }
 });
 
