@@ -40,7 +40,7 @@ function evaluate(torStack,andStack){
     let tor2 = torStack.pop();
     let and2 = andStack.pop();
     let and1 = andStack.pop();
-    if(!and1){//no second operand
+    if(and1 == undefined){//no second operand
       return and2;
     }
     if(!tor2){//bottom
